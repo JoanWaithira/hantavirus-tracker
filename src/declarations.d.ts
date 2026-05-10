@@ -8,4 +8,3 @@ declare module '*.svg' {
   export default content;
 }
 
-declare module 'react-simple-maps';
