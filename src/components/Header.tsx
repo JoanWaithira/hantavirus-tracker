@@ -1,4 +1,5 @@
 import React from 'react';
+import VirusLogo from './VirusLogo';
 
 interface HeaderProps {
   lastUpdated: string;
@@ -17,7 +18,7 @@ const Header: React.FC<HeaderProps> = ({ lastUpdated, theme, onThemeToggle, onRe
   return (
     <header className="header" role="banner">
       <div className="header-brand">
-        <div className="header-logo" aria-hidden="true">🦠</div>
+        <div className="header-logo" aria-hidden="true"><VirusLogo size={42} /></div>
         <div>
           <div className="header-title">HantaVirusWatch</div>
           <div className="header-subtitle">Global Surveillance Dashboard</div>

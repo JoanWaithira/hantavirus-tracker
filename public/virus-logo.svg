@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Outer glow ring -->
+  <circle cx="50" cy="50" r="47" fill="none" stroke="#fc8181" stroke-width="0.6" opacity="0.35"/>
+
+  <!-- Lipid envelope -->
+  <circle cx="50" cy="50" r="32" fill="#7b1d1d" stroke="#c53030" stroke-width="1.5"/>
+  <circle cx="50" cy="50" r="28" fill="#c53030"/>
+
+  <!-- 12 Gn/Gc spike glycoproteins (rotated around centre) -->
+  <ellipse cx="50" cy="14" rx="3.2" ry="6" fill="#e53e3e" stroke="#742a2a" stroke-width="0.8" transform="rotate(0 50 50)"/>
+  <ellipse cx="50" cy="14" rx="3.2" ry="6" fill="#e53e3e" stroke="#742a2a" stroke-width="0.8" transform="rotate(30 50 50)"/>
+  <ellipse cx="50" cy="14" rx="3.2" ry="6" fill="#e53e3e" stroke="#742a2a" stroke-width="0.8" transform="rotate(60 50 50)"/>
+  <ellipse cx="50" cy="14" rx="3.2" ry="6" fill="#e53e3e" stroke="#742a2a" stroke-width="0.8" transform="rotate(90 50 50)"/>
+  <ellipse cx="50" cy="14" rx="3.2" ry="6" fill="#e53e3e" stroke="#742a2a" stroke-width="0.8" transform="rotate(120 50 50)"/>
+  <ellipse cx="50" cy="14" rx="3.2" ry="6" fill="#e53e3e" stroke="#742a2a" stroke-width="0.8" transform="rotate(150 50 50)"/>
+  <ellipse cx="50" cy="14" rx="3.2" ry="6" fill="#e53e3e" stroke="#742a2a" stroke-width="0.8" transform="rotate(180 50 50)"/>
+  <ellipse cx="50" cy="14" rx="3.2" ry="6" fill="#e53e3e" stroke="#742a2a" stroke-width="0.8" transform="rotate(210 50 50)"/>
+  <ellipse cx="50" cy="14" rx="3.2" ry="6" fill="#e53e3e" stroke="#742a2a" stroke-width="0.8" transform="rotate(240 50 50)"/>
+  <ellipse cx="50" cy="14" rx="3.2" ry="6" fill="#e53e3e" stroke="#742a2a" stroke-width="0.8" transform="rotate(270 50 50)"/>
+  <ellipse cx="50" cy="14" rx="3.2" ry="6" fill="#e53e3e" stroke="#742a2a" stroke-width="0.8" transform="rotate(300 50 50)"/>
+  <ellipse cx="50" cy="14" rx="3.2" ry="6" fill="#e53e3e" stroke="#742a2a" stroke-width="0.8" transform="rotate(330 50 50)"/>
+
+  <!-- Tripartite RNA genome segments (L, M, S) -->
+  <path d="M36 46 Q44 37 52 45 Q60 53 50 58" stroke="#fed7d7" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.85"/>
+  <path d="M42 38 Q55 41 58 53" stroke="#fbd5d5" stroke-width="1.8" fill="none" stroke-linecap="round" opacity="0.75"/>
+  <path d="M39 55 Q47 63 58 58" stroke="#fbd5d5" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.65"/>
+
+  <!-- Nucleocapsid protein nodes -->
+  <circle cx="44" cy="44" r="2.5" fill="#fff5f5" opacity="0.65"/>
+  <circle cx="55" cy="42" r="2"   fill="#fff5f5" opacity="0.65"/>
+  <circle cx="58" cy="52" r="2.5" fill="#fff5f5" opacity="0.65"/>
+  <circle cx="46" cy="57" r="2"   fill="#fff5f5" opacity="0.65"/>
+  <circle cx="50" cy="49" r="3"   fill="#fff5f5" opacity="0.75"/>
+</svg>
