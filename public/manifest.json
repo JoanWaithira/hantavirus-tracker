@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "HantaVirusWatch",
+  "name": "HantaVirusWatch — Real-Time Hantavirus Surveillance",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +20,7 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#1a202c",
+  "background_color": "#1a202c",
+  "description": "Real-time global hantavirus surveillance dashboard with WHO, CDC, and ECDC data."
 }
