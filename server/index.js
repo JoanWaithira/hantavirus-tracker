@@ -234,12 +234,17 @@ app.post('/api/feedback', async (req, res) => {
 
   try {
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,        // STARTTLS — port 465 is often blocked on cloud hosts
       auth: {
         user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_APP_PASSWORD,
       },
+      tls: { rejectUnauthorized: false },
     });
+
+    await transporter.verify();   // fail fast with a clear error if creds are wrong
 
     await transporter.sendMail({
       from: `"HantaVirusWatch Feedback" <${process.env.GMAIL_USER}>`,
@@ -263,7 +268,7 @@ app.post('/api/feedback', async (req, res) => {
     res.json({ ok: true, delivered: true });
   } catch (err) {
     console.error('[feedback] Email send failed:', err.message);
-    res.status(500).json({ error: 'Failed to send email. Please try again.' });
+    res.status(500).json({ error: `Failed to send: ${err.message}` });
   }
 });
 
