@@ -39,6 +39,7 @@ const GlobalMap: React.FC<Props> = ({ countries }) => {
   const [selected, setSelected] = useState<CountryData | null>(null);
   const [isDark, setIsDark]     = useState(true);
   const [cursor, setCursor]     = useState('grab');
+  const [mapError, setMapError] = useState<string | null>(null);
 
   const countryById = useRef<Record<string, CountryData>>({});
   useEffect(() => {
@@ -208,6 +209,14 @@ const GlobalMap: React.FC<Props> = ({ countries }) => {
 
   return (
     <div style={{ position: 'relative' }}>
+      {mapError && (
+        <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(13,17,23,0.92)', borderRadius: 8, padding: '1rem', textAlign: 'center' }}>
+          <div>
+            <div style={{ color: '#fc8181', fontWeight: 700, marginBottom: 8 }}>Map failed to load</div>
+            <div style={{ color: '#8b949e', fontSize: '0.75rem', wordBreak: 'break-all' }}>{mapError}</div>
+          </div>
+        </div>
+      )}
       <div style={{ height: 420, borderRadius: 8, overflow: 'hidden', border: '1px solid var(--border-color)' }}>
         <Map
           ref={mapRef}
@@ -221,7 +230,7 @@ const GlobalMap: React.FC<Props> = ({ countries }) => {
           onClick={handleClick}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
-          onError={(e) => console.error('[GlobalMap]', e)}
+          onError={(e: any) => { const msg = e?.error?.message || JSON.stringify(e); console.error('[GlobalMap]', msg); setMapError(msg); }}
           attributionControl={false}
           style={{ width: '100%', height: '100%' }}
         >

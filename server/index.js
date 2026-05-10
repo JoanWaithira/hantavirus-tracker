@@ -6,7 +6,7 @@ const { scrapeWHOOutbreakNews, scrapeWHORSS } = require('./scrapers/who');
 const { scrapeProMEDRSS, scrapeProMEDSearch } = require('./scrapers/promed');
 const { scrapeGoogleNewsRSS, scrapeBingNewsRSS, scrapeECDC } = require('./scrapers/news');
 const { scrapeEuropeData } = require('./scrapers/ecdc_europe');
-const nodemailer = require('nodemailer');
+// nodemailer kept as fallback but primary delivery is via Web3Forms HTTP API
 
 const app = express();
 app.use(cors());
@@ -215,7 +215,7 @@ app.get('/api/news', async (req, res) => {
   }
 });
 
-// POST /api/feedback  — send feedback email to dashboard owner
+// POST /api/feedback  — deliver via Web3Forms HTTP API (no SMTP needed)
 app.post('/api/feedback', async (req, res) => {
   const { name, email, type, message } = req.body;
 
@@ -223,52 +223,44 @@ app.post('/api/feedback', async (req, res) => {
     return res.status(400).json({ error: 'Message too short.' });
   }
 
-  // If email credentials are not configured, log and acknowledge gracefully
-  if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
-    console.log('[feedback] Email not configured — logging submission:');
-    console.log(`  From: ${name || 'Anonymous'} <${email || 'no-reply'}>`);
-    console.log(`  Type: ${type || 'General'}`);
-    console.log(`  Message: ${message}`);
-    return res.json({ ok: true, delivered: false, note: 'Logged server-side (email not yet configured).' });
+  // Always log so Railway logs capture every submission
+  console.log('[feedback] New submission:');
+  console.log(`  From: ${name || 'Anonymous'} <${email || 'no-reply'}>`);
+  console.log(`  Type: ${type || 'General'}`);
+  console.log(`  Message: ${message.slice(0, 120)}`);
+
+  if (!process.env.WEB3FORMS_KEY) {
+    console.warn('[feedback] WEB3FORMS_KEY not set — logged only, not emailed');
+    return res.json({ ok: true, delivered: false });
   }
 
   try {
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false,        // STARTTLS — port 465 is often blocked on cloud hosts
-      auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASSWORD,
-      },
-      tls: { rejectUnauthorized: false },
+    const w3res = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        access_key: process.env.WEB3FORMS_KEY,
+        subject:    `[HantaVirusWatch] ${type || 'Feedback'} from ${name || 'Anonymous'}`,
+        from_name:  name || 'Anonymous',
+        email:      email || 'noreply@hantaviruswatch.app',
+        message: [
+          `Type: ${type || 'General'}`,
+          `From: ${name || 'Anonymous'} <${email || '—'}>`,
+          `Time: ${new Date().toUTCString()}`,
+          '',
+          message,
+        ].join('\n'),
+      }),
     });
 
-    await transporter.verify();   // fail fast with a clear error if creds are wrong
+    const data = await w3res.json();
+    if (!data.success) throw new Error(data.message || 'Web3Forms rejected the submission');
 
-    await transporter.sendMail({
-      from: `"HantaVirusWatch Feedback" <${process.env.GMAIL_USER}>`,
-      to: 'joanwaithira.jw@gmail.com',
-      replyTo: email || process.env.GMAIL_USER,
-      subject: `[HantaVirusWatch] ${type || 'Feedback'} from ${name || 'Anonymous'}`,
-      html: `
-        <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:24px;background:#1a202c;color:#e2e8f0;border-radius:8px">
-          <h2 style="color:#fc8181;margin-top:0">HantaVirusWatch — New Feedback</h2>
-          <table style="width:100%;border-collapse:collapse;margin-bottom:16px">
-            <tr><td style="color:#a0aec0;padding:4px 0;width:100px">From</td><td style="font-weight:700">${name || 'Anonymous'}</td></tr>
-            <tr><td style="color:#a0aec0;padding:4px 0">Email</td><td>${email || '—'}</td></tr>
-            <tr><td style="color:#a0aec0;padding:4px 0">Type</td><td><span style="background:#e53e3e22;color:#fc8181;padding:2px 10px;border-radius:100px;font-size:12px">${type || 'General'}</span></td></tr>
-            <tr><td style="color:#a0aec0;padding:4px 0">Time</td><td>${new Date().toUTCString()}</td></tr>
-          </table>
-          <div style="background:#2d3748;border-radius:6px;padding:16px;line-height:1.6;white-space:pre-wrap">${message}</div>
-        </div>
-      `,
-    });
-
+    console.log('[feedback] Delivered via Web3Forms');
     res.json({ ok: true, delivered: true });
   } catch (err) {
-    console.error('[feedback] Email send failed:', err.message);
-    res.status(500).json({ error: `Failed to send: ${err.message}` });
+    console.error('[feedback] Delivery failed:', err.message);
+    res.status(500).json({ error: 'Could not send feedback right now. It has been logged server-side.' });
   }
 });
 
