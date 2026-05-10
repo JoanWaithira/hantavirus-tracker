@@ -3,6 +3,7 @@ import './styles/globals.css';
 import AlertBanner from './components/AlertBanner';
 import Header from './components/Header';
 import Dashboard from './components/Dashboard';
+import FeedbackButton from './components/FeedbackButton';
 import { fetchGlobalStats } from './services/dataService';
 
 function App() {
@@ -44,6 +45,7 @@ function App() {
       <div id="main-content">
         <Dashboard key={refreshKey} />
       </div>
+      <FeedbackButton />
       <footer className="footer" role="contentinfo">
         <span>
           HantaVirusWatch — Educational Surveillance Dashboard · Data sourced from CDC, WHO, ECDC

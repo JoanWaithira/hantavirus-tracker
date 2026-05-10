@@ -6,6 +6,7 @@ const { scrapeWHOOutbreakNews, scrapeWHORSS } = require('./scrapers/who');
 const { scrapeProMEDRSS, scrapeProMEDSearch } = require('./scrapers/promed');
 const { scrapeGoogleNewsRSS, scrapeBingNewsRSS, scrapeECDC } = require('./scrapers/news');
 const { scrapeEuropeData } = require('./scrapers/ecdc_europe');
+const nodemailer = require('nodemailer');
 
 const app = express();
 app.use(cors());
@@ -211,6 +212,58 @@ app.get('/api/news', async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ error: err.message, articles: [] });
+  }
+});
+
+// POST /api/feedback  — send feedback email to dashboard owner
+app.post('/api/feedback', async (req, res) => {
+  const { name, email, type, message } = req.body;
+
+  if (!message || message.trim().length < 5) {
+    return res.status(400).json({ error: 'Message too short.' });
+  }
+
+  // If email credentials are not configured, log and acknowledge gracefully
+  if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
+    console.log('[feedback] Email not configured — logging submission:');
+    console.log(`  From: ${name || 'Anonymous'} <${email || 'no-reply'}>`);
+    console.log(`  Type: ${type || 'General'}`);
+    console.log(`  Message: ${message}`);
+    return res.json({ ok: true, delivered: false, note: 'Logged server-side (email not yet configured).' });
+  }
+
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD,
+      },
+    });
+
+    await transporter.sendMail({
+      from: `"HantaVirusWatch Feedback" <${process.env.GMAIL_USER}>`,
+      to: 'joanwaithira.jw@gmail.com',
+      replyTo: email || process.env.GMAIL_USER,
+      subject: `[HantaVirusWatch] ${type || 'Feedback'} from ${name || 'Anonymous'}`,
+      html: `
+        <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:24px;background:#1a202c;color:#e2e8f0;border-radius:8px">
+          <h2 style="color:#fc8181;margin-top:0">HantaVirusWatch — New Feedback</h2>
+          <table style="width:100%;border-collapse:collapse;margin-bottom:16px">
+            <tr><td style="color:#a0aec0;padding:4px 0;width:100px">From</td><td style="font-weight:700">${name || 'Anonymous'}</td></tr>
+            <tr><td style="color:#a0aec0;padding:4px 0">Email</td><td>${email || '—'}</td></tr>
+            <tr><td style="color:#a0aec0;padding:4px 0">Type</td><td><span style="background:#e53e3e22;color:#fc8181;padding:2px 10px;border-radius:100px;font-size:12px">${type || 'General'}</span></td></tr>
+            <tr><td style="color:#a0aec0;padding:4px 0">Time</td><td>${new Date().toUTCString()}</td></tr>
+          </table>
+          <div style="background:#2d3748;border-radius:6px;padding:16px;line-height:1.6;white-space:pre-wrap">${message}</div>
+        </div>
+      `,
+    });
+
+    res.json({ ok: true, delivered: true });
+  } catch (err) {
+    console.error('[feedback] Email send failed:', err.message);
+    res.status(500).json({ error: 'Failed to send email. Please try again.' });
   }
 });
 
