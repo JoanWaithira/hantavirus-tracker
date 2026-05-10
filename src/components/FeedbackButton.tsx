@@ -55,7 +55,7 @@ const FeedbackButton: React.FC = () => {
         onClick={() => setOpen(true)}
         aria-label="Send feedback"
         style={{
-          position: 'fixed', bottom: '1.5rem', right: '1.5rem', zIndex: 1000,
+          position: 'fixed', bottom: '1.5rem', right: '1.5rem', zIndex: 9999,
           display: 'flex', alignItems: 'center', gap: '0.5rem',
           padding: '0.6rem 1.1rem', borderRadius: 100,
           background: 'var(--color-outbreak)', color: '#fff',
@@ -80,7 +80,7 @@ const FeedbackButton: React.FC = () => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="feedback-title"
-          style={{ zIndex: 2000 }}
+          style={{ zIndex: 10000 }}
         >
           <div
             className="modal"

@@ -239,6 +239,7 @@ const USMap: React.FC<Props> = ({ states }) => {
           onClick={handleClick}
           onMouseMove={handleMouseMove}
           onMouseLeave={() => setPopup(null)}
+          onError={(e) => console.error('[USMap]', e)}
           attributionControl={false}
           style={{ width: '100%', height: '100%' }}
         >

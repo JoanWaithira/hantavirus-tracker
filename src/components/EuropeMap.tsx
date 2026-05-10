@@ -237,6 +237,7 @@ const EuropeMap: React.FC<Props> = ({ countries }) => {
           onClick={handleClick}
           onMouseMove={handleMouseMove}
           onMouseLeave={() => setPopup(null)}
+          onError={(e) => console.error('[EuropeMap]', e)}
           attributionControl={false}
           style={{ width: '100%', height: '100%' }}
         >

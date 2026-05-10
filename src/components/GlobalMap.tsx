@@ -221,6 +221,7 @@ const GlobalMap: React.FC<Props> = ({ countries }) => {
           onClick={handleClick}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
+          onError={(e) => console.error('[GlobalMap]', e)}
           attributionControl={false}
           style={{ width: '100%', height: '100%' }}
         >
